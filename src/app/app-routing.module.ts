@@ -7,13 +7,13 @@ import { TableComponent } from './table/table.component';
 const routes: Routes = [
   { path: 'dashboard', component: DashComponent },
   { path: 'table', component: TableComponent},
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
 ];
 
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes, { useHash: true })
   ],
   exports: [
     RouterModule

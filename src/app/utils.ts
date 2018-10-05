@@ -1,5 +1,9 @@
 export function getUrlParam(key: string): string {
-  const temp = decodeURIComponent(window.location.search.substring(1)).split('&')
+  const str = window.location.hash.substring(2).split('?');
+  if (str.length !== 2) {
+    return '';
+  }
+  const temp = decodeURIComponent(str[1]).split('&')
     .map((v) => v.split('='))
     .filter((v) => (v[0] === key) ? true : false);
   if (temp.length < 1) {

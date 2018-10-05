@@ -9,10 +9,11 @@ import { DashService } from './dash.service';
 
 export interface DialogData {
   status: string;
-  reason: string;
+  message: string;
 }
 
 export interface Status {
+  error: string;
   lifetime_profit: number;
   start_time: number;
   btcjpy: number;
@@ -39,12 +40,27 @@ export class DashComponent implements OnInit {
     public dialog: MatDialog, private dashService: DashService) { }
 
   ngOnInit() {
-    const address = getUrlParam('address');
+    let address = getUrlParam('address');
+    if (address === '') {
+      address = localStorage.getItem('address');
+      if (address === 'null') {
+        setTimeout(() => {
+          this.openDialog('No address', 'you need to specify address');
+        }, 1000);
+        return;
+      }
+    }
+    localStorage.setItem('address', address);
     this.dashService.changeAddress(address);
     const api = customerAPI + address;
+    console.log(address);
     this.http.get(api).subscribe(
       (resp: Status) => {
         console.log(resp);
+        if (resp.error !== undefined) {
+          this.openDialog('error', resp.error);
+          return;
+        }
         const uptime = ((Date.now() / 1000 - resp.start_time) / 3600).toFixed(1);
         this.metrics = [
           { metric: 'Mining Time', value: uptime + ' Hr' },
@@ -80,7 +96,7 @@ export class DashComponent implements OnInit {
   openDialog(status: string, reason: string) {
     const dialogRef = this.dialog.open(DashDialogComponent, {
       width: '250px',
-      data: { status: status, reason: reason }
+      data: { status: status, message: reason }
     });
   }
 
