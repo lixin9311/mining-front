@@ -43,7 +43,7 @@ export class DashComponent implements OnInit {
     let address = getUrlParam('address');
     if (address === '') {
       address = localStorage.getItem('address');
-      if (address === 'null') {
+      if (address === 'null' || address === '') {
         setTimeout(() => {
           this.openDialog('No address', 'you need to specify address');
         }, 1000);
