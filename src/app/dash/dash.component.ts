@@ -2,9 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { getUrlParam, str2char, char2str } from '../utils';
-import { throwError } from 'rxjs';
 import { DashService } from './dash.service';
 
 export interface DialogData {
@@ -21,7 +19,6 @@ export interface Status {
   miner_count: number;
 }
 
-const customerAPI = 'https://mining.d.tyd.us/stats/';
 @Component({
   selector: 'app-dash',
   templateUrl: './dash.component.html',
@@ -30,25 +27,42 @@ const customerAPI = 'https://mining.d.tyd.us/stats/';
 
 export class DashComponent implements OnInit {
   /** Based on the screen size, switch from standard to one column per row */
-  cards = this.updateCards();
+  cards1 = this.updateCards(0);
+  cards2 = this.updateCards(1);
   btcHistory = [];
 
   metrics: { metric: string, value: string }[];
 
   isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.Handset);
 
-  constructor(private breakpointObserver: BreakpointObserver, private http: HttpClient,
+  constructor(private breakpointObserver: BreakpointObserver,
     public dialog: MatDialog, private dashService: DashService) {
     this.dashService.btcDataChange.subscribe(
       value => {
-        this.btcHistory = value;
-        this.updateCards();
+        if (value.error !== undefined) {
+          this.openDialog('error', value.error);
+          return;
+        } else {
+          this.btcHistory = value.Records;
+          this.cards1 = this.updateCards(0);
+        }
+
+      }
+    );
+
+    this.dashService.statusChange.subscribe(
+      value => {
+        if (value.error !== undefined) {
+          this.openDialog('error', value.error);
+          return;
+        }
+        this.updateStatus(value);
+        this.cards2 = this.updateCards(1);
       }
     );
   }
 
   ngOnInit() {
-    this.dashService.getBTCData();
     let address = getUrlParam('address');
     if (address === '') {
       address = localStorage.getItem('address');
@@ -61,44 +75,22 @@ export class DashComponent implements OnInit {
     }
     localStorage.setItem('address', address);
     this.dashService.changeAddress(address);
-    const api = customerAPI + address;
-    this.http.get(api).subscribe(
-      (resp: Status) => {
-        console.log(resp);
-        if (resp.error !== undefined) {
-          this.openDialog('error', resp.error);
-          return;
-        }
-        const uptime = ((Date.now() / 1000 - resp.start_time) / 3600).toFixed(1);
-        this.metrics = [
-          { metric: 'Mining Time', value: uptime + ' Hr' },
-          { metric: 'Miners', value: resp.miner_count.toString() },
-          { metric: 'Total Profit', value: (resp.lifetime_profit / 1E8).toFixed(5) + ' BTC' },
-          { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcusd).toFixed(2) + ' USD' },
-          { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcjpy).toFixed(2) + ' JPY' }];
-        this.cards = this.updateCards();
-      },
-      error => {
-        this.handleError(error);
-      }
+    this.dashService.getBTCData();
+    setInterval(
+      () => this.dashService.getStatus(),
+      15000
     );
+    this.dashService.getStatus();
   }
 
-  handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
-      this.openDialog(error.status.toString(), error.message);
-    }
-    // return an observable with a user-facing error message
-    return throwError(
-      'Something bad happened; please try again later.');
+  updateStatus(resp: Status) {
+    const uptime = ((Date.now() / 1000 - resp.start_time) / 3600).toFixed(1);
+    this.metrics = [
+      { metric: 'Mining Time', value: uptime + ' Hr' },
+      { metric: 'Miners', value: resp.miner_count.toString() },
+      { metric: 'Total Profit', value: (resp.lifetime_profit / 1E8).toFixed(5) + ' BTC' },
+      { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcusd).toFixed(2) + ' USD' },
+      { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcjpy).toFixed(2) + ' JPY' }];
   }
 
   openDialog(status: string, reason: string) {
@@ -108,26 +100,34 @@ export class DashComponent implements OnInit {
     });
   }
 
-  updateCards() {
+  updateCards(group: number) {
     return this.breakpointObserver.observe(Breakpoints.Handset).pipe(
       map(({ matches }) => {
+        let newcards = [];
         if (matches) {
           this.isSmallScreen = true;
-          return [
+          newcards = [
             { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
             { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
             { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
             { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
           ];
+        } else {
+          this.isSmallScreen = false;
+          newcards = [
+            { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
+            { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
+            { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
+            { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
+          ];
         }
-
-        this.isSmallScreen = false;
-        return [
-          { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
-          { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
-          { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
-          { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
-        ];
+        switch (group) {
+          case 0:
+            return newcards.slice(0, 1);
+          case 1:
+            return newcards.slice(1);
+        }
+        return newcards;
       })
     );
   }

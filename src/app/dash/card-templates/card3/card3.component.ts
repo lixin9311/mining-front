@@ -1,9 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CardTemplateBaseComponent } from '../card-template-base';
 import * as CanvasJS from './canvasjs.min'; // CanvasJS.min.js
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { DashService } from '../../dash.service';
 
 export interface Record {
   Date: string;
@@ -19,8 +16,6 @@ export interface Resp {
   Records: Record[];
 }
 
-const api = 'http://127.0.0.1:8080/data.json';
-
 @Component({
   selector: 'app-card3',
   templateUrl: './card3.component.html',
@@ -30,12 +25,7 @@ const api = 'http://127.0.0.1:8080/data.json';
 export class Card3Component extends CardTemplateBaseComponent implements OnInit, AfterViewInit {
   chart: any;
   inited = false;
-  constructor(private http: HttpClient, private dashService: DashService) {
-    super();
-    // this.dashService.btcDataChange.subscribe(
-    //   value => this.updateData(value)
-    // );
-  }
+
   ngOnInit() {
     const chartdata = [];
     for (let i = 0; i < this.data.chartData.length; i++) {
@@ -84,6 +74,4 @@ export class Card3Component extends CardTemplateBaseComponent implements OnInit,
       this.inited = true;
     }
   }
-
-
 }

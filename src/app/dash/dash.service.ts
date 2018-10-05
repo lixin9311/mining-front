@@ -2,14 +2,17 @@ import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, throwError } from 'rxjs';
 import { Resp, Record } from './card-templates/card3/card3.component';
+import { Status } from './dash.component';
 
 const btcapi = 'http://127.0.0.1:8080/data.json';
+const customerAPI = 'https://mining.d.tyd.us/stats/';
 
 @Injectable()
 export class DashService {
     address: string;
     addressChange: Subject<string> = new Subject<string>();
-    btcDataChange: Subject<Record[]> = new Subject<Record[]>();
+    btcDataChange: Subject<Resp> = new Subject<Resp>();
+    statusChange: Subject<Status> = new Subject<Status>();
     constructor(private http: HttpClient) {
         this.addressChange.subscribe((value) => {
             this.address = value;
@@ -20,20 +23,33 @@ export class DashService {
     }
 
     getBTCData() {
+        // TODO: handle error
         this.http.get(btcapi).subscribe(
             (resp: Resp) => {
                 console.log(resp);
-                if (resp.error !== undefined) {
-                    return;
-                }
                 // update chart data
-                this.btcDataChange.next(resp.Records);
+                this.btcDataChange.next(resp);
             },
             error => {
                 this.handleError(error);
             }
         );
     }
+
+    getStatus() {
+        // TODO: handle error
+        const api = customerAPI + this.address;
+        this.http.get(api).subscribe(
+            (resp: Status) => {
+                console.log(resp);
+                this.statusChange.next(resp);
+            },
+            error => {
+                this.handleError(error);
+            }
+        );
+    }
+
     handleError(error: HttpErrorResponse) {
         if (error.error instanceof ErrorEvent) {
             // A client-side or network error occurred. Handle it accordingly.
