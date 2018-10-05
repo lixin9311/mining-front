@@ -1,6 +1,6 @@
 <div class="grid-container">
   <h1 class="mat-h1">Dashboard</h1>
-  <mat-grid-list [cols]="isSmallScreen ? 1 : 2" rowHeight="350px">
+  <mat-grid-list [cols]="isSmallScreen ? 2 : 4" rowHeight="180px">
     <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
         <app-cardmapper [data]="card"></app-cardmapper>
     </mat-grid-tile>

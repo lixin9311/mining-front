@@ -90,19 +90,19 @@ export class DashComponent implements OnInit {
         if (matches) {
           this.isSmallScreen = true;
           return [
-            { title: 'BTC Price', cols: 1, rows: 1, content: `BTC Price Here`, cardType: 'cardStyle3' },
-            { title: 'Metrics', cols: 1, rows: 1, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
-            { title: 'Total Mined', cols: 1, rows: 1, content: 'placeholder', cardType: 'cardStyle2' },
-            { title: 'Balance', cols: 1, rows: 1, content: 'placeholder', cardType: 'cardStyle2' }
+            { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3' },
+            { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
+            { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
+            { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
           ];
         }
 
         this.isSmallScreen = false;
         return [
-          { title: 'BTC Price', cols: 2, rows: 1, content: `BTC Price Here`, cardType: 'cardStyle3' },
-          { title: 'Metrics', cols: 1, rows: 1, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
-          { title: 'Total Mined', cols: 1, rows: 2, content: 'placeholder', cardType: 'cardStyle2' },
-          { title: 'Balance', cols: 1, rows: 1, content: 'placeholder', cardType: 'cardStyle2' }
+          { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3' },
+          { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
+          { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
+          { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
         ];
       })
     );
