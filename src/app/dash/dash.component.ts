@@ -31,15 +31,24 @@ const customerAPI = 'https://mining.d.tyd.us/stats/';
 export class DashComponent implements OnInit {
   /** Based on the screen size, switch from standard to one column per row */
   cards = this.updateCards();
+  btcHistory = [];
 
   metrics: { metric: string, value: string }[];
 
   isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.Handset);
 
   constructor(private breakpointObserver: BreakpointObserver, private http: HttpClient,
-    public dialog: MatDialog, private dashService: DashService) { }
+    public dialog: MatDialog, private dashService: DashService) {
+    this.dashService.btcDataChange.subscribe(
+      value => {
+        this.btcHistory = value;
+        this.updateCards();
+      }
+    );
+  }
 
   ngOnInit() {
+    this.dashService.getBTCData();
     let address = getUrlParam('address');
     if (address === '') {
       address = localStorage.getItem('address');
@@ -53,7 +62,6 @@ export class DashComponent implements OnInit {
     localStorage.setItem('address', address);
     this.dashService.changeAddress(address);
     const api = customerAPI + address;
-    console.log(address);
     this.http.get(api).subscribe(
       (resp: Status) => {
         console.log(resp);
@@ -106,7 +114,7 @@ export class DashComponent implements OnInit {
         if (matches) {
           this.isSmallScreen = true;
           return [
-            { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3' },
+            { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
             { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
             { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
             { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
@@ -115,7 +123,7 @@ export class DashComponent implements OnInit {
 
         this.isSmallScreen = false;
         return [
-          { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3' },
+          { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
           { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
           { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
           { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }

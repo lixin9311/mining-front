@@ -1,7 +1,25 @@
-import {Component, OnInit, AfterViewInit} from '@angular/core';
-import {CardTemplateBaseComponent} from '../card-template-base';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { CardTemplateBaseComponent } from '../card-template-base';
 import * as CanvasJS from './canvasjs.min'; // CanvasJS.min.js
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { throwError } from 'rxjs';
+import { DashService } from '../../dash.service';
+
+export interface Record {
+  Date: string;
+  Price: number;
+  Open: number;
+  High: number;
+  Low: number;
+  Vol: number;
+}
+
+export interface Resp {
+  error: string;
+  Records: Record[];
+}
+
+const api = 'http://127.0.0.1:8080/data.json';
 
 @Component({
   selector: 'app-card3',
@@ -10,13 +28,27 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class Card3Component extends CardTemplateBaseComponent implements OnInit, AfterViewInit {
-  data: {x: Number, y: number[]}[];
   chart: any;
   inited = false;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private dashService: DashService) {
     super();
+    // this.dashService.btcDataChange.subscribe(
+    //   value => this.updateData(value)
+    // );
   }
   ngOnInit() {
+    const chartdata = [];
+    for (let i = 0; i < this.data.chartData.length; i++) {
+      chartdata.push({
+        x: new Date(
+          parseInt(this.data.chartData[i].Date.split('-')[0], 10),
+          parseInt(this.data.chartData[i].Date.split('-')[1], 10) - 1, // weird bug??
+          parseInt(this.data.chartData[i].Date.split('-')[2], 10)
+        ),
+        y: [this.data.chartData[i].Open, this.data.chartData[i].High,
+        this.data.chartData[i].Low, this.data.chartData[i].Price]
+      });
+    }
     this.chart = new CanvasJS.Chart('chartContainer', {
       animationEnabled: true,
       exportEnabled: true,
@@ -30,7 +62,7 @@ export class Card3Component extends CardTemplateBaseComponent implements OnInit,
       axisY: {
         includeZero: false,
         prefix: '$',
-        title: 'Price'
+        // title: 'Price'
       },
       toolTip: {
         content: 'Date: {x}<br /><strong>Price:</strong><br />Open: {y[0]}, Close: {y[3]}<br />High: {y[1]}, Low: {y[2]}'
@@ -38,16 +70,20 @@ export class Card3Component extends CardTemplateBaseComponent implements OnInit,
       data: [{
         type: 'candlestick',
         yValueFormatString: '$##0.00',
-        dataPoints: []
+        dataPoints: chartdata
       }]
     });
   }
-  updateData() { }
+
   ngAfterViewInit() {
     if (!this.inited) {
       setTimeout(() => {
         this.chart.render();
-   }, 100);
+      }, 100);
+    } else {
+      this.inited = true;
     }
   }
+
+
 }

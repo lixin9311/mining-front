@@ -11,13 +11,15 @@ import { DashService } from './dash/dash.service';
 })
 export class AppComponent {
   title = 'bestcoin';
-  get address(): string {
-    return this.dashService.address;
-  }
+  address: string;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches)
     );
 
-  constructor(private breakpointObserver: BreakpointObserver, private dashService: DashService) { }
+  constructor(private breakpointObserver: BreakpointObserver, private dashService: DashService) {
+    this.dashService.addressChange.subscribe(
+      value => this.address = value
+    );
+  }
 }
