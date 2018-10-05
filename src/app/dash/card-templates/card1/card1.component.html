@@ -1,0 +1,20 @@
+<mat-card class="dashboard-card">
+    <mat-card-header>
+        <mat-card-title>
+            {{data.title}}
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+                <button mat-menu-item>Expand</button>
+                <button mat-menu-item>Remove</button>
+            </mat-menu>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-list>
+        <div *ngFor="let metric of data.metrics">
+            <mat-list-item>{{metric.metric}}: {{metric.value}}</mat-list-item>
+            <mat-divider></mat-divider>
+        </div>
+    </mat-list>
+</mat-card>
