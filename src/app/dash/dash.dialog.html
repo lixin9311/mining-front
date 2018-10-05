@@ -1,0 +1,12 @@
+<div class="dialog-container">
+    <h1 mat-dialog-title>An Error Happened!</h1>
+    <div mat-dialog-content>
+        <p>Sorry, an error occured during loading.</p>
+        <p>Status: {{data.status}}</p>
+        <p>Message: {{data.message}}</p>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onNoClick()">No Thanks</button>
+        <button mat-button (click)="onNoClick()">Ok</button>
+    </div>
+</div>

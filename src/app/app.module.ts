@@ -7,28 +7,34 @@ import { LayoutModule } from '@angular/cdk/layout';
 import {
   MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule,
   MatListModule, MatGridListModule, MatCardModule, MatMenuModule, MatTableModule,
-  MatPaginatorModule, MatSortModule, MatDividerModule
+  MatPaginatorModule, MatSortModule, MatDividerModule, MatDialogModule
 } from '@angular/material';
-import { DashComponent } from './dash/dash.component';
+import { DashComponent, DashDialogComponent } from './dash/dash.component';
 import { TableComponent } from './table/table.component';
 import { AppRoutingModule } from './app-routing.module';
 import { Card1Component } from './dash/card-templates/card1/card1.component';
 import { Card2Component } from './dash/card-templates/card2/card2.component';
 import { CardmapperComponent } from './dash/cardmapper.component';
 import { CardTemplateBaseComponent } from './dash/card-templates/card-template-base';
+import { HttpClientModule } from '@angular/common/http';
+import { DashService } from './dash/dash.service';
+import { Card3Component } from './dash/card-templates/card3/card3.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashComponent,
+    DashDialogComponent,
     TableComponent,
     Card1Component,
     Card2Component,
+    Card3Component,
     CardmapperComponent,
     CardTemplateBaseComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     LayoutModule,
     MatToolbarModule,
@@ -43,10 +49,11 @@ import { CardTemplateBaseComponent } from './dash/card-templates/card-template-b
     MatPaginatorModule,
     MatSortModule,
     AppRoutingModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDialogModule,
   ],
-  providers: [],
-  entryComponents: [Card1Component, Card2Component],
+  providers: [DashService],
+  entryComponents: [Card1Component, Card2Component, Card3Component, DashDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

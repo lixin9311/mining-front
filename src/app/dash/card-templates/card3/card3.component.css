@@ -14,9 +14,12 @@
 
 .dashboard-card-content {
     text-align: center;
+    vertical-align: top;
 }
 
-.left-half {
-    width: 50%;
-    font-weight: bold;
+.canvas-table {
+    height: 250px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
