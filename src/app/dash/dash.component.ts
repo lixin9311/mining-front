@@ -29,6 +29,7 @@ export class DashComponent implements OnInit {
   /** Based on the screen size, switch from standard to one column per row */
   cards1 = this.updateCards(0);
   cards2 = this.updateCards(1);
+  btc2usd: string;
   btcHistory = [];
 
   metrics: { metric: string, value: string }[];
@@ -85,6 +86,7 @@ export class DashComponent implements OnInit {
 
   updateStatus(resp: Status) {
     const uptime = ((Date.now() / 1000 - resp.start_time) / 3600).toFixed(1);
+    this.btc2usd = resp.btcusd.toFixed(1);
     this.metrics = [
       { metric: 'Mining Time', value: uptime + ' Hr' },
       { metric: 'Miners', value: resp.miner_count.toString() },
@@ -110,7 +112,7 @@ export class DashComponent implements OnInit {
             { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
             { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
             { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
-            { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
+            { title: 'BTC to USD', cols: 1, rows: 1, content: this.btc2usd, unit: 'USD/BTC', cardType: 'cardStyle2' }
           ];
         } else {
           this.isSmallScreen = false;
@@ -118,7 +120,7 @@ export class DashComponent implements OnInit {
             { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
             { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
             { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
-            { title: 'Hash Speed', cols: 1, rows: 1, content: '50', unit: 'GH/sec', cardType: 'cardStyle2' }
+            { title: 'BTC to USD', cols: 1, rows: 1, content: this.btc2usd, unit: 'USD/BTC', cardType: 'cardStyle2' }
           ];
         }
         switch (group) {
