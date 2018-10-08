@@ -3,7 +3,7 @@ import { CardTemplateBaseComponent } from '../card-template-base';
 import * as CanvasJS from './canvasjs.min'; // CanvasJS.min.js
 
 export interface Record {
-  Date: string;
+  Date: number;
   Price: number;
   Open: number;
   High: number;
@@ -30,11 +30,7 @@ export class Card3Component extends CardTemplateBaseComponent implements OnInit,
     const chartdata = [];
     for (let i = 0; i < this.data.chartData.length; i++) {
       chartdata.push({
-        x: new Date(
-          parseInt(this.data.chartData[i].Date.split('-')[0], 10),
-          parseInt(this.data.chartData[i].Date.split('-')[1], 10) - 1, // weird bug??
-          parseInt(this.data.chartData[i].Date.split('-')[2], 10)
-        ),
+        x: new Date(this.data.chartData[i].Date * 1000),
         y: [this.data.chartData[i].Open, this.data.chartData[i].High,
         this.data.chartData[i].Low, this.data.chartData[i].Price]
       });

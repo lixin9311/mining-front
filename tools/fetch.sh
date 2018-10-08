@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+curl 'https://api.pro.coinbase.com/products/BTC-USD/candles?granularity=86400' | jq '.[:30] | map({"Date":.[0], "Low":.[1], "High":.[2], "Open":.[3], "Price":.[4], "Vol":.[5]}) | {"Records": .} '
