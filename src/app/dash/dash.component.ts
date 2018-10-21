@@ -32,7 +32,7 @@ export class DashComponent implements OnInit {
   cards2 = this.updateCards(1);
   btc2usd: string;
   estprof: string;
-  starttime: Date;
+  starttime = new Date(0);
   btcHistory = [];
 
   metrics: { metric: string, value: string }[];
