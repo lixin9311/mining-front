@@ -4,8 +4,8 @@ import { Subject, throwError } from 'rxjs';
 import { Resp, Record } from './card-templates/card3/card3.component';
 import { Status } from './dash.component';
 
-const btcapi = 'http://127.0.0.1:8080/data.json';
-const customerAPI = 'https://mining.d.tyd.us/stats/';
+const btcapi = '/btc.json';
+const customerAPI = '/stats/';
 
 @Injectable()
 export class DashService {

@@ -10,7 +10,7 @@ import { DashService } from './dash/dash.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'bestcoin';
+  title = 'mining';
   address: string;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(

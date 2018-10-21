@@ -17,6 +17,7 @@ export interface Status {
   btcjpy: number;
   btcusd: number;
   miner_count: number;
+  estimated_profit: number;
 }
 
 @Component({
@@ -30,6 +31,8 @@ export class DashComponent implements OnInit {
   cards1 = this.updateCards(0);
   cards2 = this.updateCards(1);
   btc2usd: string;
+  estprof: string;
+  starttime: Date;
   btcHistory = [];
 
   metrics: { metric: string, value: string }[];
@@ -85,8 +88,10 @@ export class DashComponent implements OnInit {
   }
 
   updateStatus(resp: Status) {
+    this.starttime = new Date(resp.start_time * 1000);
     const uptime = ((Date.now() / 1000 - resp.start_time) / 3600).toFixed(1);
     this.btc2usd = resp.btcusd.toFixed(1);
+    this.estprof = (resp.estimated_profit / 1E8).toFixed(5);
     this.metrics = [
       { metric: 'Mining Time', value: uptime + ' Hr' },
       { metric: 'Miners', value: resp.miner_count.toString() },
@@ -110,16 +115,18 @@ export class DashComponent implements OnInit {
           this.isSmallScreen = true;
           newcards = [
             { title: 'BTC Price', cols: 2, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
-            { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
-            { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
+            { title: 'Metrics (From ' + this.starttime.toLocaleString() + ')', cols: 2, rows: 2,
+            content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
+            { title: 'Profitability', cols: 1, rows: 1, content: this.estprof, unit: 'BTC/day', cardType: 'cardStyle2' },
             { title: 'BTC to USD', cols: 1, rows: 1, content: this.btc2usd, unit: 'USD/BTC', cardType: 'cardStyle2' }
           ];
         } else {
           this.isSmallScreen = false;
           newcards = [
             { title: 'BTC Price', cols: 4, rows: 2, content: `BTC Price Here`, cardType: 'cardStyle3', chartData: this.btcHistory },
-            { title: 'Metrics', cols: 2, rows: 2, content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
-            { title: 'Profitability', cols: 1, rows: 1, content: '100.00000', unit: 'BTC/day', cardType: 'cardStyle2' },
+            { title: 'Metrics (From ' + this.starttime.toLocaleString() + ')', cols: 2, rows: 2,
+            content: 'stab', cardType: 'cardStyle1', metrics: this.metrics },
+            { title: 'Profitability', cols: 1, rows: 1, content: this.estprof, unit: 'BTC/day', cardType: 'cardStyle2' },
             { title: 'BTC to USD', cols: 1, rows: 1, content: this.btc2usd, unit: 'USD/BTC', cardType: 'cardStyle2' }
           ];
         }
