@@ -16,7 +16,7 @@ export interface Status {
   start_time: number;
   btcjpy: number;
   btcusd: number;
-  miner_count: number;
+  miner_count: string;
   estimated_profit: number;
 }
 
@@ -94,7 +94,7 @@ export class DashComponent implements OnInit {
     this.estprof = (resp.estimated_profit / 1E8).toFixed(5);
     this.metrics = [
       { metric: 'Mining Time', value: uptime + ' Hr' },
-      { metric: 'Miners', value: resp.miner_count.toString() },
+      { metric: 'Miners', value: resp.miner_count },
       { metric: 'Total Profit', value: (resp.lifetime_profit / 1E8).toFixed(5) + ' BTC' },
       { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcusd).toFixed(2) + ' USD' },
       { metric: 'Profit (est.)', value: (resp.lifetime_profit / 1E8 * resp.btcjpy).toFixed(2) + ' JPY' }];
